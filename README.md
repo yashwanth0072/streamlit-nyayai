@@ -277,14 +277,6 @@ streamlit run app.py --server.port 8501 --server.address 0.0.0.0
 
 ---
 
-## 📚 Documentation
-
-For detailed documentation, see:
-- [Code Audit Report](./miscellenious/CODE_AUDIT_REPORT.md) - Comprehensive code review
-- [Tech Stack](./miscellenious/TECH_STACK.md) - Technical details
-- [API Documentation](./miscellenious/API_DOCS.md) - API reference
-
----
 
 <div align="center">
 
