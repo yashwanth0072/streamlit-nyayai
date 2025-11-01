@@ -1,0 +1,351 @@
+"""
+UI components and styling for NyayAI
+"""
+import streamlit as st
+from config import (
+    PRIMARY_COLOR, SECONDARY_COLOR, ACCENT_COLOR, ACCENT_COLOR_END, 
+    TEXT_COLOR, BACKGROUND_COLOR, APP_TITLE, APP_DESCRIPTION
+)
+
+def apply_custom_css():
+    """Apply custom CSS styling to the Streamlit app"""
+    # Consolidated CSS and JS for the app; build strings with concatenation to avoid f-string brace escaping
+    css = (
+        "<style>\n"
+        "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');\n"
+        "/* Base app colors */\n"
+        ".stApp { background-color: " + BACKGROUND_COLOR + "; color: " + TEXT_COLOR + "; }\n"
+        "/* Select boxes */\n"
+        "div[data-baseweb=\"select\"] { background-color: " + SECONDARY_COLOR + " !important; }\n"
+        "div[data-baseweb=\"select\"] > div { background-color: " + SECONDARY_COLOR + " !important; border: 1px solid " + ACCENT_COLOR + " !important; color: " + TEXT_COLOR + " !important; }\n"
+        "div[data-baseweb=\"select\"] input, div[data-baseweb=\"select\"] span { color: " + TEXT_COLOR + " !important; }\n"
+        "div[data-baseweb=\"select\"] > div:hover { border-color: " + ACCENT_COLOR_END + " !important; }\n"
+        "div[data-baseweb=\"select\"] svg { color: " + ACCENT_COLOR + " !important; }\n"
+        "/* Dropdown menu (popover) */\n"
+        "div[data-baseweb=\"popover\"] { background-color: " + SECONDARY_COLOR + " !important; border: 1px solid " + ACCENT_COLOR + " !important; }\n"
+        "div[data-baseweb=\"popover\"] ul { background-color: " + SECONDARY_COLOR + " !important; }\n"
+        "div[data-baseweb=\"popover\"] li { color: " + TEXT_COLOR + " !important; }\n"
+        "div[data-baseweb=\"popover\"] li:hover { background-color: " + PRIMARY_COLOR + " !important; }\n"
+        "/* Buttons and other elements */\n"
+        ".stButton button { background: linear-gradient(135deg, " + ACCENT_COLOR + " 0%, " + ACCENT_COLOR_END + " 100%) !important; color: white !important; border: none !important; }\n"
+        "/* Flashcard Container with proper 3D flip animation */\n"
+        ".flashcard-container { perspective: 1000px; margin: 1.5rem 0; height: 350px; cursor: pointer; width: 100%; }\n"
+        ".flashcard { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s; transform-style: preserve-3d; border-radius: 15px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }\n"
+        ".flashcard.flipped { transform: rotateY(180deg); }\n"
+        ".flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; align-items: center; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); overflow: hidden; }\n"
+        ".flashcard-front { background: linear-gradient(135deg, " + PRIMARY_COLOR + " 0%, " + SECONDARY_COLOR + " 100%); color: white; }\n"
+        ".flashcard-back { background: linear-gradient(135deg, " + ACCENT_COLOR + " 0%, " + ACCENT_COLOR_END + " 100%); color: white; transform: rotateY(180deg); }\n"
+        ".flashcard-content { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 1rem; }\n"
+        ".flashcard-section-number { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.8rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); line-height: 1; }\n"
+        ".flashcard-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.8rem; text-align: center; line-height: 1.3; max-height: 2.6rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }\n"
+        ".flashcard-description { font-size: 0.9rem; line-height: 1.4; text-align: center; opacity: 0.95; margin-bottom: 0.8rem; max-height: 4.2rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }\n"
+        ".flashcard-context { font-size: 0.85rem; font-style: italic; opacity: 0.9; text-align: center; line-height: 1.3; max-height: 3.9rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }\n"
+        ".flashcard-punishment { font-size: 1rem; line-height: 1.4; text-align: center; font-weight: 500; margin: 1rem 0; max-height: 8.4rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; }\n"
+        ".flashcard-instruction { font-size: 0.75rem; opacity: 0.8; text-align: center; margin-top: auto; padding-top: 0.5rem; border-top: 1px solid rgba(255, 255, 255, 0.2); width: 100%; }\n"
+        "/* Feature cards */\n"
+        ".feature-card { background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); margin: 1rem 0; border-left: 4px solid " + ACCENT_COLOR + "; transition: all 0.3s ease; cursor: pointer; backdrop-filter: blur(10px); color: " + TEXT_COLOR + "; }\n"
+        ".feature-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25); background: rgba(255, 255, 255, 0.15); }\n"
+        ".feature-card h3 { color: white; font-weight: 600; margin-bottom: 0.5rem; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }\n"
+        ".feature-card-arrow { position: absolute; right: 1.5rem; bottom: 1.5rem; font-size: 1.5rem; opacity: 0; transform: translateX(-10px); transition: all 0.3s ease; }\n"
+        ".feature-card:hover .feature-card-arrow { opacity: 1; transform: translateX(0); }\n"
+        "/* Chat messages */\n"
+        ".user-message { background: linear-gradient(135deg, " + ACCENT_COLOR + " 0%, " + ACCENT_COLOR_END + " 100%); color: white; padding: 0.75rem 1rem; border-radius: 18px 18px 4px 18px; margin: 0.5rem 0; max-width: 80%; margin-left: auto; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }\n"
+        ".ai-message-container { background: rgba(0, 0, 0, 0.3); color: " + TEXT_COLOR + "; padding: 1.25rem 1.5rem; border-radius: 15px; margin: 1rem 0; border-left: 4px solid " + ACCENT_COLOR + "; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); backdrop-filter: blur(10px); }\n"
+        ".ai-message-container h2 { color: " + ACCENT_COLOR_END + "; font-size: 1.2rem; margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600; }\n"
+        ".ai-message-container h2:first-child { margin-top: 0; }\n"
+        ".ai-message-container ul, .ai-message-container ol { margin-left: 1.5rem; margin-bottom: 0.75rem; }\n"
+        ".ai-message-container li { margin-bottom: 0.4rem; line-height: 1.6; }\n"
+        ".ai-message-container strong { color: " + ACCENT_COLOR_END + "; }\n"
+        ".ai-message-container code { background: rgba(255, 255, 255, 0.1); padding: 0.2rem 0.4rem; border-radius: 4px; }\n"
+        ".ai-message-container p { margin-bottom: 0.75rem; line-height: 1.7; }\n"
+        "/* Header */\n"
+        ".main-header { background: linear-gradient(135deg, " + ACCENT_COLOR + " 0%, " + ACCENT_COLOR_END + " 100%); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15); text-align: center; color: white; }\n"
+        ".main-header h1 { color: white; font-size: 2.5rem; font-weight: 700; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }\n"
+        ".main-header p { color: #e2e8f0; font-size: 1.2rem; margin: 0.5rem 0 0 0; font-weight: 300; }\n"
+        "</style>\n"
+    )
+
+    js = (
+        "<script>\n"
+        "(function() {\n"
+        "  function handleClickOutside(event) {\n"
+        "    const sidebar = document.querySelector('[data-testid=\"stSidebar\"]');\n"
+        "    const toggleButton = document.querySelector('[data-testid=\"baseButton-secondary\"]');\n"
+        "    if (!sidebar || !toggleButton) return;\n"
+        "    if (toggleButton.contains(event.target)) return;\n"
+        "    if (!sidebar.contains(event.target)) {\n"
+        "      const sidebarLeft = parseInt(getComputedStyle(sidebar).left);\n"
+        "      if (sidebarLeft >= 0) { toggleButton.click(); }\n"
+        "    }\n"
+        "  }\n"
+        "  document.addEventListener('click', handleClickOutside);\n"
+        "})();\n"
+        "</script>\n"
+    )
+
+    st.markdown(css + js, unsafe_allow_html=True)
+
+
+def add_sidebar_toggle():
+    """Add a permanent sidebar toggle button"""
+    if 'sidebar_state' not in st.session_state:
+        st.session_state.sidebar_state = "expanded"
+    
+    col1, col2 = st.columns([1, 20])
+    with col1:
+        if st.button('☰', key='sidebar_toggle', help="Toggle sidebar visibility"):
+            # Toggle the sidebar state
+            st.session_state.sidebar_state = "collapsed" if st.session_state.sidebar_state == "expanded" else "expanded"
+            
+            # Apply the appropriate CSS based on state
+            if st.session_state.sidebar_state == "collapsed":
+                custom_css = f"""
+                    <style>
+                    /* Import Google Fonts */
+                    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+                    /* Dark theme for select boxes */
+                    div[data-baseweb="select"] {{
+                        background-color: {SECONDARY_COLOR} !important;
+                    }}
+        
+                    div[data-baseweb="select"] > div {{
+                        background-color: {SECONDARY_COLOR} !important;
+                        border-color: {ACCENT_COLOR} !important;
+                    }}
+        
+                    div[data-baseweb="select"] input {{
+                        color: {TEXT_COLOR} !important;
+                    }}
+        
+                    div[data-baseweb="select"] > div:hover {{
+                        border-color: {ACCENT_COLOR_END} !important;
+                    }}
+        
+                    div[data-baseweb="select"] svg {{
+                        color: {ACCENT_COLOR} !important;
+                    }}
+        
+                    /* Style dropdown menu */
+                    div[data-baseweb="popover"] {{
+                        background-color: {SECONDARY_COLOR} !important;
+                        border: 1px solid {ACCENT_COLOR} !important;
+                    }}
+        
+                    div[data-baseweb="popover"] ul {{
+                        background-color: {SECONDARY_COLOR} !important;
+                    }}
+        
+                    div[data-baseweb="popover"] li {{
+                        color: {TEXT_COLOR} !important;
+                    }}
+        
+                    div[data-baseweb="popover"] li:hover {{
+                        background-color: {PRIMARY_COLOR} !important;
+                    }}
+                    </style>
+                """
+                st.markdown(custom_css, unsafe_allow_html=True)
+                
+            else:
+                st.markdown("""
+                    <style>
+                        [data-testid="stSidebar"] {
+                            transform: translateX(0);
+                        }
+                        [data-testid="stSidebar"] .element-container {
+                            opacity: 1;
+                        }
+                        .main .block-container {
+                            padding-left: calc(300px + 2rem);
+                        }
+                    </style>
+                """, unsafe_allow_html=True)
+            st.rerun()
+
+
+def render_header():
+    """Render the main header of the application"""
+    # Create a container for the header section
+    header_container = st.container()
+    
+    with header_container:
+        # Add sidebar toggle in a narrow column
+        add_sidebar_toggle()
+        
+        # Add the main header
+        st.markdown(
+            f'''
+            <div class="main-header">
+                <h1>{APP_TITLE}</h1>
+                <p>{APP_DESCRIPTION}</p>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+
+def render_feature_card_with_navigation(title: str, description: str, icon: str, page_name: str):
+    """Render a feature card with navigation functionality"""
+    # Make the entire card clickable
+    card_clicked = False
+    
+    # Create a unique key for this card
+    card_key = f"card_{page_name.lower().replace(' ', '_')}"
+    # Create clickable card with hover effect using a link that sets ?page=<page_name>
+    # URL-encode the page name to ensure safe query param usage
+    import urllib.parse
+    encoded = urllib.parse.quote_plus(page_name)
+
+    card_html = f"""
+    <a href="?page={encoded}" style="text-decoration: none; color: inherit;">
+      <div class="feature-card" id="{card_key}" style="cursor: pointer;">
+          <h3>{icon} {title}</h3>
+          <p>{description}</p>
+          <div class="feature-card-arrow">→</div>
+      </div>
+    </a>
+    """
+    st.markdown(card_html, unsafe_allow_html=True)
+
+
+def render_feature_card(title: str, description: str, icon: str = "📋"):
+    """Render a feature card (legacy version)"""
+    st.markdown(f"""
+    <div class="feature-card">
+        <h3>{icon} {title}</h3>
+        <p>{description}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def render_chat_message(message: str, is_user: bool = False):
+    """Render a chat message with proper formatting"""
+    # Clean up any potential stray HTML tags
+    message = message.replace("<div>", "").replace("</div>", "").strip()
+    
+    if is_user:
+        # User messages use simple HTML rendering
+        st.markdown(f"""
+        <div class="user-message">
+            {message}
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        # AI messages use markdown for better formatting with headers, lists, etc.
+        # Use a container with custom class for styling
+        st.markdown('<div class="ai-message-container">', unsafe_allow_html=True)
+        st.markdown(message)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+
+def render_ipc_flashcard(section_data: dict, card_id: str):
+    """Render an IPC section as an interactive flashcard with improved text layout"""
+    # Initialize flip state if not exists
+    if f"flipped_{card_id}" not in st.session_state:
+        st.session_state[f"flipped_{card_id}"] = False
+    
+    # Create unique container for this flashcard
+    container = st.container()
+    
+    with container:
+        # Flip button
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button(f"🔄 Flip Card", key=f"flip_btn_{card_id}", use_container_width=True):
+                st.session_state[f"flipped_{card_id}"] = not st.session_state[f"flipped_{card_id}"]
+                st.rerun()
+        
+        # Determine if card is flipped
+        is_flipped = st.session_state[f"flipped_{card_id}"]
+        flip_class = "flipped" if is_flipped else ""
+        
+        # Render flashcard
+        if not is_flipped:
+            # Front side - Section info and context
+            description_preview = section_data['description'][:120] + "..." if len(section_data['description']) > 120 else section_data['description']
+            context_preview = section_data['context'][:150] + "..." if len(section_data['context']) > 150 else section_data['context']
+            
+            st.markdown(f"""
+            <div class="flashcard-container" id="card_{card_id}">
+                <div class="flashcard {flip_class}">
+                    <div class="flashcard-front">
+                        <div class="flashcard-content">
+                            <div class="flashcard-section-number">§ {section_data['section']}</div>
+                            <div class="flashcard-title">{section_data['title']}</div>
+                            <div class="flashcard-description">{description_preview}</div>
+                            <div class="flashcard-context">
+                                <strong>Applicable when:</strong><br>
+                                {context_preview}
+                            </div>
+                        </div>
+                        <div class="flashcard-instruction">Click "Flip Card" to see punishment details</div>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            # Back side - Punishment details
+            st.markdown(f"""
+            <div class="flashcard-container" id="card_{card_id}">
+                <div class="flashcard {flip_class}">
+                    <div class="flashcard-back">
+                        <div class="flashcard-content">
+                            <div class="flashcard-section-number">⚖️ Punishment</div>
+                            <div class="flashcard-title">Section {section_data['section']}: {section_data['title']}</div>
+                            <div class="flashcard-punishment">{section_data['punishment']}</div>
+                        </div>
+                        <div class="flashcard-instruction">Click "Flip Card" to return to section details</div>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+
+def render_ipc_section(section_data: dict):
+    """Render an IPC section card (legacy format)"""
+    st.markdown(f"""
+    <div class="ipc-card">
+        <div class="ipc-section-number">Section {section_data['section']}</div>
+        <div class="ipc-title">{section_data['title']}</div>
+        <p>{section_data['description']}</p>
+        <div class="ipc-category">Category: {section_data['category']}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def render_template_card(template_data: dict):
+    """Render a legal template card"""
+    st.markdown(f"""
+    <div class="template-card">
+        <h4>📄 {template_data['name']}</h4>
+        <p><strong>Category:</strong> {template_data['category']}</p>
+        <p>{template_data['description']}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def render_status_indicator(is_online: bool):
+    """Render AI status indicator"""
+    if is_online:
+        st.markdown('<p class="status-online">🟢 AI Online - Full assistance available</p>', unsafe_allow_html=True)
+    else:
+        st.markdown('<p class="status-offline">🟡 Offline Mode - Basic assistance available. Configure API key for full features.</p>', unsafe_allow_html=True)
+
+
+def add_keyboard_support():
+    """Add JavaScript for keyboard support (spacebar to flip cards)"""
+    st.markdown("""
+    <script>
+    document.addEventListener('keydown', function(event) {
+        if (event.code === 'Space') {
+            event.preventDefault();
+            // Find the currently focused or hovered flashcard
+            const activeCard = document.querySelector('.flashcard-container:hover .flashcard');
+            if (activeCard) {
+                activeCard.classList.toggle('flipped');
+            }
+        }
+    });
+    </script>
+    """, unsafe_allow_html=True)

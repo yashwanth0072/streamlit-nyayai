@@ -1,0 +1,3 @@
+[server]
+# Align the upload limit shown in the drag-and-drop UI with our app config
+maxUploadSize = 10
