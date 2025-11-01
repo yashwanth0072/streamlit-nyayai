@@ -4,7 +4,6 @@
 
 ![Python](https://img.shields.io/badge/python-3.13+-blue.svg)
 ![Streamlit](https://img.shields.io/badge/streamlit-1.50.0-FF4B4B.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 ---
 
@@ -221,7 +220,7 @@ Contributions are welcome! Please follow these steps:
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is currently unlicensed. All rights reserved by the author.
 
 ---
 
