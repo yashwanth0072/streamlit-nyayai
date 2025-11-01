@@ -286,18 +286,6 @@ For detailed documentation, see:
 
 ---
 
-## 🎯 Roadmap
-
-- [ ] Multi-language support (Hindi, Tamil, Telugu)
-- [ ] Voice input for queries
-- [ ] Case law database integration
-- [ ] Lawyer directory
-- [ ] Mobile app version
-- [ ] Advanced document comparison
-- [ ] Legal case tracking
-
----
-
 <div align="center">
 
 **Made with ❤️ for the Indian Legal System**
